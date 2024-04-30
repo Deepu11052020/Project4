@@ -8,11 +8,13 @@ object InsertRow {
       .appName("Hive updates")
       .enableHiveSupport()
       .getOrCreate()
+    val branchSchema = "BranchId Int, Branch_Name String, City_Name String, Start_Date String, End_Date String"
+    val branchdf= spark.read
+      .option("header", true)
+      .schema(branchSchema)
+      .csv(args(0))
+    branchdf.show()
 
-    // Read data from Hive table into DataFrame
-    val tableName = "ukusmar.branch1" // Update with your Hive table name
-    val df = spark.table(tableName)
-    df.show(100, false)
     // Create a DataFrame with the new rows
     val data = Seq(
       Row(1, "D", "Dallas", "2020-01-01", ""),
@@ -29,10 +31,12 @@ object InsertRow {
     newRowDF.show()
 
     // Append the new DataFrame to the existing DataFrame
-    val updatedDF = df.union(newRowDF)
-
+    val updatedDF = branchdf.union(newRowDF)
+//HDFS
+    newRowDF.coalesce(1).write.option("header", true).mode("append").csv(args(1))
+    //Hive
     // Write the updated DataFrame back to the Hive table
-    newRowDF.write.mode("append").saveAsTable(tableName)
+    newRowDF.write.mode("append").saveAsTable("ukusmar.Branch1")
 
     // Stop Spark session
     spark.stop()
