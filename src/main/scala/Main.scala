@@ -1,6 +1,6 @@
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
-import org.apache.spark.sql.functions.{col, format_number, initcap, to_date, when}
+import org.apache.spark.sql.functions.{col, current_timestamp, format_number, initcap, to_date, when}
 
 object Main {
   def main(args: Array[String]): Unit = {
@@ -26,9 +26,9 @@ object Main {
     val superdf_D = sortedSuperdf.dropDuplicates()
     val superdfFilled = superdf_D.na.fill("Unknown")
     val convertedDF = superdfFilled.withColumn("Gender", when(col("Gender") === "F", "Female").otherwise("Male"))
-    val superMarketdf_cleaned = convertedDF.withColumn("Tax_5_percent", format_number(col("Tax_5_percent").cast("Decimal(10,2)"), 2))
+    val decimalDF = convertedDF.withColumn("Tax_5_percent", format_number(col("Tax_5_percent").cast("Decimal(10,2)"), 2))
       .withColumn("Total", format_number(col("Total").cast("Decimal(10,2)"), 2))
-
+    val superMarketdf_cleaned = decimalDF.withColumn("Created_date",current_timestamp())
     //define schema for Branch
     val branchSchema = "BranchId Int, Branch_Name String, City_Name String, Start_Date String, End_Date String"
     val branchdf= spark.read
