@@ -2,6 +2,8 @@ import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions.{col, current_timestamp, format_number, initcap, to_date, when}
 
+import java.util.Properties
+
 object IncrementalLoad {
   def main(args: Array[String]): Unit = {
     println("Hello world!")
@@ -65,21 +67,35 @@ object IncrementalLoad {
     println("tables loaded into HDFS")
 
     //Hive
-    superMarketdf_cleaned.write.mode("append").saveAsTable("ukusmar.superMarket1")
-    branchdf_cleaned.write.mode("append").saveAsTable("ukusmar.Branch1")
+    superMarketdf_cleaned.write.mode("overwrite").saveAsTable("ukusmar.superMarket1")
+    branchdf_cleaned.write.mode("overwrite").saveAsTable("ukusmar.Branch1")
     productdf_cleaned.write.mode("overwrite").saveAsTable("ukusmar.selectProductLine1")
     println("tables loaded into Hive")
 
     //Postgres SQL
     superMarketdf_cleaned.write.format("jdbc").option("url", "jdbc:postgresql://ec2-3-9-191-104.eu-west-2.compute.amazonaws.com:5432/testdb")
       .option("dbtable", "superMarket").option("driver", "org.postgresql.Driver").option("user", "consultants")
-      .option("password", "WelcomeItc@2022").mode("overwrite").save()
+      .option("password", "WelcomeItc@2022").mode("append").save()
     branchdf_cleaned.write.format("jdbc").option("url", "jdbc:postgresql://ec2-3-9-191-104.eu-west-2.compute.amazonaws.com:5432/testdb")
       .option("dbtable", "branch").option("driver", "org.postgresql.Driver").option("user", "consultants")
-      .option("password", "WelcomeItc@2022").mode("overwrite").save()
+      .option("password", "WelcomeItc@2022").mode("append").save()
     productdf_cleaned.write.format("jdbc").option("url", "jdbc:postgresql://ec2-3-9-191-104.eu-west-2.compute.amazonaws.com:5432/testdb")
       .option("dbtable", "productLine").option("driver", "org.postgresql.Driver").option("user", "consultants")
       .option("password", "WelcomeItc@2022").mode("overwrite").save()
     println("tables loaded into DB")
+
+    //Mysql
+    val url = "jdbc:mysql://localhost:3306/testdb"
+    val username = "root"
+    val password = "Kittians@01"
+    val connectionProperties = new Properties()
+    connectionProperties.put("user", username)
+    connectionProperties.put("password", password)
+    val superMarket = "superMarket"
+    val branch ="branch"
+    val ProductLine ="ProductLine"
+    superMarketdf_cleaned.write.mode("append").jdbc(url, superMarket, connectionProperties)
+    branchdf_cleaned.write.mode("append").jdbc(url,branch,connectionProperties)
+    productdf_cleaned.write.jdbc(url, ProductLine, connectionProperties)
   }
 }
