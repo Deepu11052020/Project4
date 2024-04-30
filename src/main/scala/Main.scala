@@ -28,6 +28,11 @@ object Main {
     val convertedDF = superdfFilled.withColumn("Gender", when(col("Gender") === "F", "Female").otherwise("Male"))
     val decimalDF = convertedDF.withColumn("Tax_5_percent", format_number(col("Tax_5_percent").cast("Decimal(10,2)"), 2))
       .withColumn("Total", format_number(col("Total").cast("Decimal(10,2)"), 2))
+      .withColumn("unit_price", format_number(col("unit_price").cast("Decimal(10,2)"), 2))
+      .withColumn("cogs", format_number(col("cogs").cast("Decimal(10,2)"), 2))
+      .withColumn("gross_margin_per", format_number(col("gross_margin_per").cast("Decimal(10,2)"), 2))
+      .withColumn("gross_income", format_number(col("gross_income").cast("Decimal(10,2)"), 2))
+      .withColumn("rating", format_number(col("rating").cast("Decimal(10,2)"), 2))
     val superMarketdf_cleaned = decimalDF.withColumn("Created_date",current_timestamp())
     //define schema for Branch
     val branchSchema = "BranchId Int, Branch_Name String, City_Name String, Start_Date String, End_Date String"
