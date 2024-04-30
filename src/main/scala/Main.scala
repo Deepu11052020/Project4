@@ -46,7 +46,7 @@ object Main {
     val branchdf_cleaned1 = branchdf.withColumn("City_Name", initcap(col("City_Name")))
     val branchdf_cleaned = branchdf_cleaned1.withColumn("Created_date",current_timestamp())
     //define schema for product Table
-    val productLine = "ProductLine_Id Int,ProductLine_Desc String,Start_Date String,End_Date String"
+    val productLine = "productId Int,ProductLine_Desc String,Start_Date String,End_Date String"
     var producthdf= spark.read
       .option("header", true)
       .schema(productLine)
