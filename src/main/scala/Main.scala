@@ -52,8 +52,8 @@ object Main {
     //.csv("C:\\Users\\deepu\\Documents\\Project_SuperMarket\\ProductLine.csv")
     val formattedproducthdf= producthdf.withColumn("Start_Date", to_date(col("Start_Date"), "dd/MM/yyyy"))
       .withColumn("End_Date", to_date(col("End_Date"), "dd/MM/yyyy"))
-    val productdf_cleaned = formattedproducthdf.withColumn("ProductLine_Desc", initcap(col("ProductLine_Desc")))
-
+    val productdf_cleaned1 = formattedproducthdf.withColumn("ProductLine_Desc", initcap(col("ProductLine_Desc")))
+    val productdf_cleaned = productdf_cleaned1.withColumn("Created_date",current_timestamp())
     superMarketdf_cleaned.show(100, false)
     branchdf_cleaned.show()
     productdf_cleaned.show()
