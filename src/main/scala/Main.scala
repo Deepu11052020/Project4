@@ -67,7 +67,7 @@ object Main {
     //Hive
     superMarketdf_cleaned.write.mode("overwrite").saveAsTable("ukusmar.superMarket1")
     branchdf_cleaned.write.mode("overwrite").saveAsTable("ukusmar.Branch1")
-    productdf_cleaned.write.mode("overwrite").saveAsTable("ukusmar.selectProductLine1")
+    productdf_cleaned.write.mode("overwrite").saveAsTable("ukusmar.ProductLine1")
     println("tables loaded into Hive")
 
     //Postgres SQL

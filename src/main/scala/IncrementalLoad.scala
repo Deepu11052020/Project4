@@ -41,7 +41,8 @@ object IncrementalLoad {
       .schema(branchSchema)
       .csv(args(2))
     // .csv("C:\\Users\\deepu\\Documents\\Project_SuperMarket\\BranchCity.csv")
-    val branchdf_cleaned = branchdf.withColumn("City_Name", initcap(col("City_Name")))
+    val branchdf_cleaned1 = branchdf.withColumn("City_Name", initcap(col("City_Name")))
+    val branchdf_cleaned = branchdf_cleaned1.withColumn("Created_date",current_timestamp())
     //define schema for product Table
     val productLine = "ProductLine_Id Int,ProductLine_Desc String,Start_Date String,End_Date String"
     var producthdf = spark.read
@@ -51,15 +52,15 @@ object IncrementalLoad {
     //.csv("C:\\Users\\deepu\\Documents\\Project_SuperMarket\\ProductLine.csv")
     val formattedproducthdf = producthdf.withColumn("Start_Date", to_date(col("Start_Date"), "dd/MM/yyyy"))
       .withColumn("End_Date", to_date(col("End_Date"), "dd/MM/yyyy"))
-    val productdf_cleaned = formattedproducthdf.withColumn("ProductLine_Desc", initcap(col("ProductLine_Desc")))
-
+    val productdf_cleaned1 = formattedproducthdf.withColumn("ProductLine_Desc", initcap(col("ProductLine_Desc")))
+    val productdf_cleaned = productdf_cleaned1.withColumn("Created_date",current_timestamp())
     superMarketdf_cleaned.show(100, false)
     branchdf_cleaned.show()
     productdf_cleaned.show()
 
     //HDFS
-    superMarketdf_cleaned.coalesce(1).write.option("header", true).mode("append").csv(args(1))
-    branchdf_cleaned.coalesce(1).write.option("header", true).mode("append").csv(args(3))
+    superMarketdf_cleaned.coalesce(1).write.option("header", true).mode("overwrite").csv(args(1))
+    branchdf_cleaned.coalesce(1).write.option("header", true).mode("overwrite").csv(args(3))
     productdf_cleaned.coalesce(1).write.option("header", true).mode("overwrite").csv(args(5))
     println("tables loaded into HDFS")
 
@@ -72,7 +73,7 @@ object IncrementalLoad {
     //Postgres SQL
     superMarketdf_cleaned.write.format("jdbc").option("url", "jdbc:postgresql://ec2-3-9-191-104.eu-west-2.compute.amazonaws.com:5432/testdb")
       .option("dbtable", "superMarket").option("driver", "org.postgresql.Driver").option("user", "consultants")
-      .option("password", "WelcomeItc@2022").mode("append").save()
+      .option("password", "WelcomeItc@2022").mode("overwrite").save()
     branchdf_cleaned.write.format("jdbc").option("url", "jdbc:postgresql://ec2-3-9-191-104.eu-west-2.compute.amazonaws.com:5432/testdb")
       .option("dbtable", "branch").option("driver", "org.postgresql.Driver").option("user", "consultants")
       .option("password", "WelcomeItc@2022").mode("overwrite").save()
