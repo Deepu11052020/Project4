@@ -10,12 +10,17 @@ object Usecaes {
   def main(args: Array[String]): Unit = {
     Logger.getLogger("org").setLevel(Level.WARN)
     val spark = SparkSession.builder()
+      .appName("YourAppName")
+      .config("spark.driver.extraClassPath", "/var/lib/jenkins/workspace/nagaranipysparkdryrun/lib/postgresql-42.5.3.jar")
+      .config("spark.executor.extraClassPath", "/var/lib/jenkins/workspace/nagaranipysparkdryrun/lib/postgresql-42.5.3.jar")
+      .getOrCreate()
+   /* val spark = SparkSession.builder()
       .appName("DB updates")
       .master("local[1]")
        .enableHiveSupport()
       .getOrCreate()
 
-
+*/
     // Define MySQL connection properties
     val url = "jdbc:mysql://localhost:3306/testdb"
     val username = "root"
