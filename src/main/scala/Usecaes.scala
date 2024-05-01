@@ -42,14 +42,18 @@ object Usecaes {
   JOIN Branch b
   ON sm.BranchId = b.BranchId
 """)
-
     // Show the joined DataFrame
     UseCasedDF1.show()
+    UseCasedDF1.coalesce(1).write.option("header", true).mode("overwrite").csv(args(0))
+
+
     //hive
        UseCasedDF1.write.saveAsTable("ukusmar.UseCasedDF1")
     // DB
-      UseCasedDF1.write.format("jdbc").option("url", "jdbc:postgresql://ec2-3-9-191-104.eu-west-2.compute.amazonaws.com:5432/testdb")
+     /* UseCasedDF1.write.format("jdbc").option("url", "jdbc:postgresql://ec2-3-9-191-104.eu-west-2.compute.amazonaws.com:5432/testdb")
       .option("dbtable", "UseCasedDF1").option("driver", "org.postgresql.Driver").option("user", "consultants")
       .option("password", "WelcomeItc@2022").mode("overwrite").save()
+      */
+
   }
 }
